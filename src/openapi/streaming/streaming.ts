@@ -717,7 +717,7 @@ class Streaming extends MicroEmitter<EmittedEvents> {
     private resetSubscriptions(subscriptions: Subscription[]) {
         for (let i = 0; i < subscriptions.length; i++) {
             const subscription = subscriptions[i];
-            subscription.reset();
+            subscription.reset(true);
         }
     }
 
@@ -941,7 +941,7 @@ class Streaming extends MicroEmitter<EmittedEvents> {
         }
 
         this.connection.onOrphanFound();
-        subscription.reset();
+        subscription.reset(false);
     }
 
     private handleSubscriptionReadyForUnsubscribe(
@@ -1222,7 +1222,7 @@ class Streaming extends MicroEmitter<EmittedEvents> {
             const subscription = this.subscriptions[i];
             // Reset the subscription and mark it as not having a connection so its state becomes unsubscribed
             // next action if there is any i.e. subscribe will go in the queue until the connection is available again
-            subscription.reset();
+            subscription.unsubscribeAndSubscribe();
             subscription.onConnectionUnavailable();
         }
 
@@ -1251,7 +1251,7 @@ class Streaming extends MicroEmitter<EmittedEvents> {
             // disconnecting *should* shut down all subscriptions. We also delete all below.
             // So mark the subscription as not having a connection and reset it so its state becomes unsubscribed
             subscription.onConnectionUnavailable();
-            subscription.reset();
+            subscription.dispose();
         }
         this.subscriptions.length = 0;
 
